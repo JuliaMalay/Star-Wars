@@ -3,29 +3,32 @@ import People from './PeopleCard';
 import {saveState, loadState} from './LocaleStorage';
 
 export default function MainList() {
-  const [people, setPeople] = React.useState([]);
+  const [page, setPage] = React.useState({previous: null, next: null});
   const [timer, setTimer] = React.useState(null);
   const [favorite, setFavorite] = React.useState([]);
+  function getPage(page = '') {
+    // `/?page=${index}`
+    try {
+      fetch(`https://swapi.dev/api/people` + page)
+        .then((response) => {
+          return response.json();
+        })
+        .then((data) => {
+          console.log(data);
+
+          setPage(data);
+        });
+    } catch (e) {
+      console.log(e);
+    }
+  }
   React.useEffect(() => {
     try {
       setFavorite(loadState('favorite') ?? []);
     } catch (e) {
       console.log(e);
     }
-
-    try {
-      fetch('https://swapi.dev/api/people')
-        .then((response) => {
-          return response.json();
-        })
-        .then((data) => {
-          // console.log(data);
-
-          setPeople(data.results);
-        });
-    } catch (e) {
-      console.log(e);
-    }
+    getPage();
   }, []);
 
   function search(name) {
@@ -34,7 +37,7 @@ export default function MainList() {
         return response.json();
       })
       .then((data) => {
-        setPeople(data.results);
+        setPage(data);
       });
   }
   function changeFavorite(url) {
@@ -47,6 +50,31 @@ export default function MainList() {
       setFavorite(newFavorite);
       saveState('favorite', JSON.stringify(newFavorite));
     }
+  }
+  function checkPage() {
+    let currentPage = 0;
+    if (page.previous !== null) {
+      currentPage = +page.previous.slice(-1) + 1;
+    } else if (page.next !== null) {
+      currentPage = page.next.slice(-1) - 1;
+    } else {
+      return null;
+    }
+    return (
+      <div>
+        {page.previous !== null && (
+          <button onClick={() => getPage(`/?page=${currentPage - 1}`)}>
+            {currentPage - 1}
+          </button>
+        )}
+        <button>{currentPage}</button>
+        {page.next !== null && (
+          <button onClick={() => getPage(`/?page=${currentPage + 1}`)}>
+            {currentPage + 1}
+          </button>
+        )}
+      </div>
+    );
   }
 
   return (
@@ -66,7 +94,7 @@ export default function MainList() {
       />
       <div>People from Star Wars:</div>
       <div>
-        {people.map((item) => {
+        {(page.results ?? []).map((item) => {
           return (
             <People
               info={item}
@@ -81,6 +109,7 @@ export default function MainList() {
           );
         })}
       </div>
+      {checkPage()}
     </div>
   );
 }
