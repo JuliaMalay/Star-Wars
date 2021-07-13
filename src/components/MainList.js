@@ -19,7 +19,8 @@ export default function MainList() {
           return response.json();
         })
         .then((data) => {
-          console.log(data);
+          // console.log(data);
+
           setPeople(data.results);
         });
     } catch (e) {
@@ -33,13 +34,11 @@ export default function MainList() {
         return response.json();
       })
       .then((data) => {
-        console.log(data);
         setPeople(data.results);
       });
   }
   function changeFavorite(url) {
     let index = favorite.findIndex((item) => item === url);
-    console.log(index);
     if (index === -1) {
       saveState('favorite', JSON.stringify([...favorite, url]));
       setFavorite([...favorite, url]);
