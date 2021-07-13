@@ -11,7 +11,7 @@ export default function People({info, changeFavorite, isFavorite}) {
           changeFavorite(info.url);
         }}
       >
-        {/* {isFavorite?❤️:🖤} */}
+        {isFavorite ? '❤️' : '🖤'}
       </button>
     </div>
   );

@@ -7,7 +7,11 @@ export default function MainList() {
   const [timer, setTimer] = React.useState(null);
   const [favorite, setFavorite] = React.useState([]);
   React.useEffect(() => {
-    setFavorite(JSON.parse(loadState('favorite') ?? '[]'));
+    try {
+      setFavorite(loadState('favorite') ?? []);
+    } catch (e) {
+      console.log(e);
+    }
 
     try {
       fetch('https://swapi.dev/api/people')
@@ -40,13 +44,15 @@ export default function MainList() {
       saveState('favorite', JSON.stringify([...favorite, url]));
       setFavorite([...favorite, url]);
     } else {
-      setFavorite(favorite.splice(index, 1));
+      const newFavorite = favorite.filter((item) => item !== url);
+      setFavorite(newFavorite);
+      saveState('favorite', JSON.stringify(newFavorite));
     }
   }
 
   return (
     <div>
-      <label for="search">Search people:</label>
+      <label forhtml="search">Search people:</label>
       <input
         type="search"
         id="search"
@@ -71,6 +77,7 @@ export default function MainList() {
                   ? true
                   : false
               }
+              key={item.name}
             />
           );
         })}
