@@ -1,22 +1,28 @@
 import React from 'react';
 import People from './PeopleCard';
 import {saveState, loadState} from './LocaleStorage';
+import {Container, Grid} from '@material-ui/core';
+import {Pagination} from '@material-ui/lab';
 
-export default function MainList() {
-  const [page, setPage] = React.useState({previous: null, next: null});
+export default function MainList({setIndexPage, indexPage}) {
+  const [page, setPage] = React.useState({
+    previous: null,
+    next: null,
+    count: 0,
+  });
   const [timer, setTimer] = React.useState(null);
   const [favorite, setFavorite] = React.useState([]);
-  function getPage(page = '') {
-    // `/?page=${index}`
+  function getPage(ipage, isRefrash = false) {
+    setIndexPage(isRefrash ? 1 : ipage);
     try {
-      fetch(`https://swapi.dev/api/people` + page)
+      let search = isRefrash ? '' : page.search ?? '';
+
+      fetch(`https://swapi.dev/api/people/?${search}page=${ipage}`)
         .then((response) => {
           return response.json();
         })
         .then((data) => {
-          console.log(data);
-
-          setPage(data);
+          setPage({...data, search});
         });
     } catch (e) {
       console.log(e);
@@ -28,16 +34,19 @@ export default function MainList() {
     } catch (e) {
       console.log(e);
     }
-    getPage();
+    getPage(indexPage);
   }, []);
 
   function search(name) {
+    setIndexPage(1);
     fetch(`https://swapi.dev/api/people/?search=${name}`)
       .then((response) => {
         return response.json();
       })
       .then((data) => {
-        setPage(data);
+        console.log(data);
+
+        setPage({...data, search: `search=${name}&`});
       });
   }
   function changeFavorite(url) {
@@ -52,28 +61,18 @@ export default function MainList() {
     }
   }
   function checkPage() {
-    let currentPage = 0;
-    if (page.previous !== null) {
-      currentPage = +page.previous.slice(-1) + 1;
-    } else if (page.next !== null) {
-      currentPage = page.next.slice(-1) - 1;
-    } else {
-      return null;
-    }
+    let count = Math.ceil(page.count / 10);
+    if (count === 0) return null;
     return (
-      <div>
-        {page.previous !== null && (
-          <button onClick={() => getPage(`/?page=${currentPage - 1}`)}>
-            {currentPage - 1}
-          </button>
-        )}
-        <button>{currentPage}</button>
-        {page.next !== null && (
-          <button onClick={() => getPage(`/?page=${currentPage + 1}`)}>
-            {currentPage + 1}
-          </button>
-        )}
-      </div>
+      <Pagination
+        page={indexPage}
+        count={count}
+        onChange={(e, p) => getPage(p)}
+        color="primary"
+        size="large"
+        shape="rounded"
+        variant="outlined"
+      />
     );
   }
 
@@ -87,27 +86,39 @@ export default function MainList() {
         onChange={(e) => {
           clearTimeout(timer);
           let t = setTimeout(() => {
-            search(e.target.value);
+            if (e.target.value.length === 0) {
+              getPage(indexPage, true);
+            } else {
+              search(e.target.value);
+            }
           }, 1000);
           setTimer(t);
         }}
       />
-      <div>People from Star Wars:</div>
       <div>
-        {(page.results ?? []).map((item) => {
-          return (
-            <People
-              info={item}
-              changeFavorite={changeFavorite}
-              isFavorite={
-                favorite.find((url) => url === item.url) !== undefined
-                  ? true
-                  : false
-              }
-              key={item.name}
-            />
-          );
-        })}
+        <Container maxWidth="md">
+          <Grid container spacing={4}>
+            {(page.results ?? []).map((item) => {
+              let parts = item.url.split('/');
+              let lastSegment = parts.pop() || parts.pop();
+              let image = `https://starwars-visualguide.com/assets/img/characters/${lastSegment}.jpg`;
+              // console.log(image);
+              return (
+                <People
+                  info={item}
+                  image={image}
+                  changeFavorite={changeFavorite}
+                  isFavorite={
+                    favorite.find((url) => url === item.url) !== undefined
+                      ? true
+                      : false
+                  }
+                  key={item.name}
+                />
+              );
+            })}
+          </Grid>
+        </Container>
       </div>
       {checkPage()}
     </div>

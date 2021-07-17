@@ -5,20 +5,25 @@ import {BrowserRouter, Route} from 'react-router-dom';
 import MainList from './components/MainList';
 import Favorite from './components/Favorite';
 import Header from './components/Header';
-import useStyles from './components/style';
+// import useStyles from './components/style';
 
 function App() {
-  const classes = useStyles();
+  const [indexPage, setIndexPage] = React.useState(1);
+  // const classes = useStyles();
   return (
-    <BrowserRouter>
-      <div>
+    <div>
+      <BrowserRouter>
         <Header />
         <div style={{height: window.innerHeight, width: '100%'}}>
-          <Route exact path="/" render={() => <MainList />} />
-          <Route path="/Favorite" render={() => <Favorite />} />
+          <Route exact path="/">
+            <MainList setIndexPage={setIndexPage} indexPage={indexPage} />
+          </Route>
+          <Route path="/Favorite">
+            <Favorite />
+          </Route>
         </div>
-      </div>
-    </BrowserRouter>
+      </BrowserRouter>
+    </div>
   );
 }
 

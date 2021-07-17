@@ -45,13 +45,11 @@ const useStyles = makeStyles((theme) => ({
       'linear-gradient(#fff700 50%, #fff700 50%), linear-gradient(silver 50%, silver 50%)',
     backgroundPosition: 'left bottom',
     backgroundRepeat: 'no-repeat',
-    // backgroundSize: '0 .063em, 100% .063em',
     backgroundSize: '0 .063em, 100% .063em',
     color: 'silver',
     paddingBottom: '.188em',
     transition: 'background-size .5s',
     '&:hover': {
-      // backgroundSize: '100% .063em, 100% .063em',
       backgroundSize: '100% .063em, 100% .063em',
       backgroundPosition: 'left bottom',
     },
@@ -70,6 +68,15 @@ const useStyles = makeStyles((theme) => ({
     backgroundSize: 'contain',
     backgroundRepeat: 'no-repeat',
     backgroundPosition: 'center',
+  },
+  cardMedia: {
+    position: 'relative',
+    paddingBottom: '100%',
+    overflow: 'hidden',
+  },
+  card: {
+    display: 'block',
+    height: '100%',
   },
 }));
 
