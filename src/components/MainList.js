@@ -1,10 +1,27 @@
 import React from 'react';
+import {useEffect} from 'react';
 import People from './PeopleCard';
 import {saveState, loadState} from './LocaleStorage';
 import {Container, Grid} from '@material-ui/core';
 import {Pagination} from '@material-ui/lab';
+import useStyles from './style';
+import SearchBar from './SearchBar';
+import {ThemeProvider} from '@material-ui/styles';
+import {createTheme} from '@material-ui/core/styles';
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#000000',
+    },
+    secondary: {
+      main: '#ffffff',
+    },
+  },
+});
 
 export default function MainList({setIndexPage, indexPage}) {
+  const classes = useStyles();
   const [page, setPage] = React.useState({
     previous: null,
     next: null,
@@ -28,6 +45,9 @@ export default function MainList({setIndexPage, indexPage}) {
       console.log(e);
     }
   }
+
+  React.useEffect(() => window.scrollTo(0, 0), [indexPage]);
+
   React.useEffect(() => {
     try {
       setFavorite(loadState('favorite') ?? []);
@@ -72,37 +92,33 @@ export default function MainList({setIndexPage, indexPage}) {
         size="large"
         shape="rounded"
         variant="outlined"
+        className={classes.pagination}
       />
     );
   }
 
   return (
-    <div>
-      <label forhtml="search">Search people:</label>
-      <input
-        type="search"
-        id="search"
-        name="search"
-        onChange={(e) => {
-          clearTimeout(timer);
-          let t = setTimeout(() => {
-            if (e.target.value.length === 0) {
-              getPage(indexPage, true);
-            } else {
-              search(e.target.value);
-            }
-          }, 1000);
-          setTimer(t);
-        }}
-      />
-      <div>
-        <Container maxWidth="md">
+    <div className={classes.container}>
+      <ThemeProvider theme={theme}>
+        <SearchBar
+          onChange={(e) => {
+            clearTimeout(timer);
+            let t = setTimeout(() => {
+              if (e.target.value.length === 0) {
+                getPage(indexPage, true);
+              } else {
+                search(e.target.value);
+              }
+            }, 1000);
+            setTimer(t);
+          }}
+        />
+        <Container maxWidth="md" style={{marginTop: '20px'}}>
           <Grid container spacing={4}>
             {(page.results ?? []).map((item) => {
               let parts = item.url.split('/');
               let lastSegment = parts.pop() || parts.pop();
               let image = `https://starwars-visualguide.com/assets/img/characters/${lastSegment}.jpg`;
-              // console.log(image);
               return (
                 <People
                   info={item}
@@ -118,9 +134,9 @@ export default function MainList({setIndexPage, indexPage}) {
               );
             })}
           </Grid>
+          {checkPage()}
         </Container>
-      </div>
-      {checkPage()}
+      </ThemeProvider>
     </div>
   );
 }

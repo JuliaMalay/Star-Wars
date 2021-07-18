@@ -7,11 +7,26 @@ import {
   Typography,
   CardActions,
   Button,
+  CircularProgress,
 } from '@material-ui/core';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import useStyles from './style';
 
 export default function People({info, image, changeFavorite, isFavorite}) {
+  const [home, setHome] = React.useState({});
+  React.useEffect(() => {
+    try {
+      fetch(info.homeworld)
+        .then((response) => {
+          return response.json();
+        })
+        .then((data) => {
+          setHome(data);
+        });
+    } catch (e) {
+      console.log(e);
+    }
+  }, []);
   const classes = useStyles();
   return (
     <Grid item xs={12} sm={6} md={4}>
@@ -25,8 +40,11 @@ export default function People({info, image, changeFavorite, isFavorite}) {
           <Typography variant="h5" style={{fontFamily: 'Play'}}>
             {info.name}
           </Typography>
+          <Typography variant="h6">
+            Homeworld: {home.name ?? <CircularProgress />}
+          </Typography>
         </CardContent>
-        <CardActions>
+        <CardActions style={{justifyContent: 'flex-end'}}>
           <Button
             onClick={() => {
               changeFavorite(info.url);

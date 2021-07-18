@@ -1,20 +1,6 @@
 import {makeStyles} from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
-  palette: {
-    primary: {
-      light: '#757ce8',
-      main: '#ffffff',
-      dark: '#002884',
-      contrastText: '#fff',
-    },
-    secondary: {
-      light: '#ff7961',
-      main: '#f44336',
-      dark: '#ba000d',
-      contrastText: '#000',
-    },
-  },
   mainHeader: {
     position: 'relative',
     color: theme.palette.common.white,
@@ -27,7 +13,6 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(1),
   },
   appBar: {
-    backgroundColor: 'black',
     alignItems: 'center',
     justifyContent: 'space-around',
   },
@@ -71,12 +56,42 @@ const useStyles = makeStyles((theme) => ({
   },
   cardMedia: {
     position: 'relative',
-    paddingBottom: '100%',
-    overflow: 'hidden',
+    paddingTop: '137.5%',
+    // overflow: 'hidden',
   },
   card: {
     display: 'block',
     height: '100%',
+    '&:hover': {
+      // border: '2px solid grey',
+      boxShadow: '0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22)',
+    },
+  },
+  pagination: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: '50px',
+    justifyContent: 'center',
+    justifyItems: 'center',
+    display: 'flex',
+  },
+  container: {
+    minHeight: '100%',
+    position: 'relative',
+    paddingBottom: '70px',
+  },
+  cardMediaFavorite: {
+    width: '10%',
+  },
+  root: {
+    display: 'flex',
+    margin: '10px',
+    '&:hover': {
+      // border: '2px solid grey',
+      boxShadow: '0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22)',
+    },
   },
 }));
 
