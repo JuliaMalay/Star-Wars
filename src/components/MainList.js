@@ -6,19 +6,6 @@ import {Container, Grid} from '@material-ui/core';
 import {Pagination} from '@material-ui/lab';
 import useStyles from './style';
 import SearchBar from './SearchBar';
-import {ThemeProvider} from '@material-ui/styles';
-import {createTheme} from '@material-ui/core/styles';
-
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: '#000000',
-    },
-    secondary: {
-      main: '#ffffff',
-    },
-  },
-});
 
 export default function MainList({setIndexPage, indexPage}) {
   const classes = useStyles();
@@ -99,44 +86,42 @@ export default function MainList({setIndexPage, indexPage}) {
 
   return (
     <div className={classes.container}>
-      <ThemeProvider theme={theme}>
-        <SearchBar
-          onChange={(e) => {
-            clearTimeout(timer);
-            let t = setTimeout(() => {
-              if (e.target.value.length === 0) {
-                getPage(indexPage, true);
-              } else {
-                search(e.target.value);
-              }
-            }, 1000);
-            setTimer(t);
-          }}
-        />
-        <Container maxWidth="md" style={{marginTop: '20px'}}>
-          <Grid container spacing={4}>
-            {(page.results ?? []).map((item) => {
-              let parts = item.url.split('/');
-              let lastSegment = parts.pop() || parts.pop();
-              let image = `https://starwars-visualguide.com/assets/img/characters/${lastSegment}.jpg`;
-              return (
-                <People
-                  info={item}
-                  image={image}
-                  changeFavorite={changeFavorite}
-                  isFavorite={
-                    favorite.find((url) => url === item.url) !== undefined
-                      ? true
-                      : false
-                  }
-                  key={item.name}
-                />
-              );
-            })}
-          </Grid>
-          {checkPage()}
-        </Container>
-      </ThemeProvider>
+      <SearchBar
+        onChange={(e) => {
+          clearTimeout(timer);
+          let t = setTimeout(() => {
+            if (e.target.value.length === 0) {
+              getPage(indexPage, true);
+            } else {
+              search(e.target.value);
+            }
+          }, 1000);
+          setTimer(t);
+        }}
+      />
+      <Container maxWidth="md" style={{marginTop: '20px'}}>
+        <Grid container spacing={4}>
+          {(page.results ?? []).map((item) => {
+            let parts = item.url.split('/');
+            let lastSegment = parts.pop() || parts.pop();
+            let image = `https://starwars-visualguide.com/assets/img/characters/${lastSegment}.jpg`;
+            return (
+              <People
+                info={item}
+                image={image}
+                changeFavorite={changeFavorite}
+                isFavorite={
+                  favorite.find((url) => url === item.url) !== undefined
+                    ? true
+                    : false
+                }
+                key={item.name}
+              />
+            );
+          })}
+        </Grid>
+        {checkPage()}
+      </Container>
     </div>
   );
 }

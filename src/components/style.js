@@ -83,11 +83,13 @@ const useStyles = makeStyles((theme) => ({
     paddingBottom: '70px',
   },
   cardMediaFavorite: {
-    width: '10%',
+    width: '80px',
+    height: '110px',
   },
   root: {
     display: 'flex',
     margin: '10px',
+    alignItems: 'center',
     '&:hover': {
       // border: '2px solid grey',
       boxShadow: '0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22)',
