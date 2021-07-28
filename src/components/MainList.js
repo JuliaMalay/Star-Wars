@@ -16,6 +16,12 @@ export default function MainList({setIndexPage, indexPage}) {
   });
   const [timer, setTimer] = React.useState(null);
   const [favorite, setFavorite] = React.useState([]);
+  const [gender, setGender] = React.useState('all');
+
+  const changeGender = (gender) => {
+    setGender(gender);
+  };
+
   function getPage(ipage, isRefrash = false) {
     setIndexPage(isRefrash ? 1 : ipage);
     try {
@@ -67,6 +73,7 @@ export default function MainList({setIndexPage, indexPage}) {
       saveState('favorite', JSON.stringify(newFavorite));
     }
   }
+
   function checkPage() {
     let count = Math.ceil(page.count / 10);
     if (count === 0) return null;
@@ -83,10 +90,14 @@ export default function MainList({setIndexPage, indexPage}) {
       />
     );
   }
-
+  const list = (page.results ?? []).filter(
+    (item) => item.gender === gender || gender === 'all'
+  );
   return (
     <div className={classes.container}>
       <SearchBar
+        gender={gender}
+        changeGender={changeGender}
         onChange={(e) => {
           clearTimeout(timer);
           let t = setTimeout(() => {
@@ -100,26 +111,32 @@ export default function MainList({setIndexPage, indexPage}) {
         }}
       />
       <Container maxWidth="md" style={{marginTop: '20px'}}>
-        <Grid container spacing={4}>
-          {(page.results ?? []).map((item) => {
-            let parts = item.url.split('/');
-            let lastSegment = parts.pop() || parts.pop();
-            let image = `https://starwars-visualguide.com/assets/img/characters/${lastSegment}.jpg`;
-            return (
-              <People
-                info={item}
-                image={image}
-                changeFavorite={changeFavorite}
-                isFavorite={
-                  favorite.find((url) => url === item.url) !== undefined
-                    ? true
-                    : false
-                }
-                key={item.name}
-              />
-            );
-          })}
-        </Grid>
+        {list.length === 0 ? (
+          <div style={{textAlign: 'center'}}>
+            <h3>Nothing found on this page</h3>
+          </div>
+        ) : (
+          <Grid container spacing={4}>
+            {list.map((item) => {
+              let parts = item.url.split('/');
+              let lastSegment = parts.pop() || parts.pop();
+              let image = `https://starwars-visualguide.com/assets/img/characters/${lastSegment}.jpg`;
+              return (
+                <People
+                  info={item}
+                  image={image}
+                  changeFavorite={changeFavorite}
+                  isFavorite={
+                    favorite.find((url) => url === item.url) !== undefined
+                      ? true
+                      : false
+                  }
+                  key={item.name}
+                />
+              );
+            })}
+          </Grid>
+        )}
         {checkPage()}
       </Container>
     </div>
